@@ -1,0 +1,287 @@
+/* ============================================================
+   SITE ENGINE — builds header, footer and page content from
+   content.js so every page stays on-brand automatically.
+   ============================================================ */
+(function () {
+  const S = window.SITE;
+  const page = document.body.dataset.page;
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const v = (name) => `var(--${name})`;
+  const esc = (s = "") => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  /* ---------- the puzzle piece shape (matches the MR mark) ---------- */
+  const PIECE_PATH =
+    "M0 22 H31 Q34 22 33 18 A11 11 0 1 1 47 18 Q46 22 49 22 H78 V51 Q78 54 82 53 A11 11 0 1 1 82 67 Q78 66 78 69 V100 H0 Z";
+  const piece = (fill, extra = "") =>
+    `<svg class="piece-svg" viewBox="-2 -4 106 106" aria-hidden="true" ${extra}><path d="${PIECE_PATH}" fill="${fill}"/></svg>`;
+
+  /* ---------- header ---------- */
+  const header = $("#site-header");
+  if (header) {
+    header.innerHTML = `
+      <a class="brand" href="index.html" aria-label="molly rudisill — home">
+        <img src="assets/mark-mr.png" alt="MR" />
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="nav">menu</button>
+      <nav id="nav" class="nav">
+        ${S.sections
+          .map(
+            (s) =>
+              `<a href="${s.href}" style="--c:${v(s.color)};--i:${v(s.ink)}" ${s.id === page ? 'aria-current="page"' : ""}>${esc(s.title)}</a>`
+          )
+          .join("")}
+        <a class="nav-say-hi" href="#contact">say hi</a>
+      </nav>`;
+    const btn = $(".nav-toggle", header);
+    btn.addEventListener("click", () => {
+      const open = header.classList.toggle("open");
+      btn.setAttribute("aria-expanded", open);
+    });
+  }
+
+  /* ---------- marquee ---------- */
+  document.querySelectorAll("[data-marquee]").forEach((el) => {
+    const run = S.marquee.map((w) => `<span>${esc(w)}</span><i>✦</i>`).join("");
+    el.innerHTML = `<div class="marquee-track">${run}${run}</div>`;
+  });
+
+  /* ---------- footer + contact ticket ---------- */
+  const footer = $("#site-footer");
+  if (footer) {
+    footer.innerHTML = `
+      <section id="contact" class="contact">
+        <div class="stamp" aria-hidden="true">
+          <svg viewBox="0 0 200 140"><path d="${wavyRect(200, 140, 10)}" fill="${v("blush")}"/></svg>
+          <span>make<br/>something<br/>weird</span>
+        </div>
+        <div class="ticket">
+          <p class="ticket-kicker">got a project, a question or a cool puzzle?</p>
+          <h2>let's keep <em>in touch</em></h2>
+          <a class="btn btn-cream" href="mailto:${esc(S.email)}">${esc(S.email)}</a>
+        </div>
+        ${badge("seal", "tech + creative ✦ art + code ✦ ", "sky")}
+      </section>
+      <div class="stripes stripes-tomato"></div>
+      <div class="footer-inner">
+        <img class="footer-mark" src="assets/mark-mr.png" alt="MR" />
+        <div>
+          <p class="footer-big">putting the pieces together<br/>since forever.</p>
+          <ul class="footer-links">
+            ${S.sections.map((s) => `<li><a href="${s.href}">${esc(s.title)}</a></li>`).join("")}
+            ${S.socials.map((s) => `<li><a href="${s.url}" target="_blank" rel="noopener">${esc(s.label)} ↗</a></li>`).join("")}
+          </ul>
+        </div>
+        <p class="footer-copy">© ${new Date().getFullYear()} molly rudisill · made with love & a lot of color</p>
+      </div>`;
+  }
+
+  /* ---------- helpers that draw brand shapes ---------- */
+  function wavyRect(w, h, a) {
+    // a rectangle with a scalloped / wavy edge, like a stamp
+    const n = 10, pts = [];
+    const edge = (x1, y1, x2, y2, nx, ny) => {
+      for (let i = 0; i < n; i++) {
+        const t1 = (i + 0.5) / n, t2 = (i + 1) / n;
+        const cx = x1 + (x2 - x1) * t1 + nx * a, cy = y1 + (y2 - y1) * t1 + ny * a;
+        pts.push(`Q${cx.toFixed(1)} ${cy.toFixed(1)} ${(x1 + (x2 - x1) * t2).toFixed(1)} ${(y1 + (y2 - y1) * t2).toFixed(1)}`);
+      }
+    };
+    const p = a;
+    edge(p, p, w - p, p, 0, -1);
+    edge(w - p, p, w - p, h - p, 1, 0);
+    edge(w - p, h - p, p, h - p, 0, 1);
+    edge(p, h - p, p, p, -1, 0);
+    return `M${p} ${p} ${pts.join(" ")} Z`;
+  }
+
+  function badge(cls, text, color) {
+    const id = "c" + Math.random().toString(36).slice(2, 7);
+    return `<div class="badge ${cls}" aria-hidden="true">
+      <svg viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="96" fill="${v(color)}"/>
+        <circle cx="100" cy="100" r="80" fill="none" stroke="${v("cream")}" stroke-width="1.5" stroke-dasharray="3 5"/>
+        <defs><path id="${id}" d="M100 100 m-66 0 a66 66 0 1 1 132 0 a66 66 0 1 1 -132 0"/></defs>
+        <text><textPath href="#${id}" textLength="408" lengthAdjust="spacing">${esc(text)}</textPath></text>
+      </svg>
+      <img src="assets/mark-mr.png" alt="" />
+    </div>`;
+  }
+
+  // deterministic random from a string, so each item always gets the same art
+  function rng(seed) {
+    let h = 2166136261;
+    for (const c of seed) h = Math.imul(h ^ c.charCodeAt(0), 16777619);
+    return () => {
+      h += 0x6d2b79f5;
+      let t = h;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  /* auto-generated cover art in brand colors for items without an image */
+  const PALETTE = ["cream", "olive", "chartreuse", "tomato", "bubblegum", "sky", "cherry", "blush", "cocoa", "ink"];
+  function cover(seed) {
+    const r = rng(seed);
+    const pick = (arr) => arr[Math.floor(r() * arr.length)];
+    const bg = pick(PALETTE);
+    const others = PALETTE.filter((c) => c !== bg);
+    const c1 = pick(others), c2 = pick(others.filter((c) => c !== c1)), c3 = pick(others.filter((c) => c !== c1 && c !== c2));
+    const shapes = [];
+    const style = Math.floor(r() * 4);
+    if (style === 0) {
+      // stripes + sun
+      for (let x = 0; x < 400; x += 40) shapes.push(`<rect x="${x}" y="0" width="20" height="300" fill="${v(c1)}" opacity=".9"/>`);
+      shapes.push(`<circle cx="${120 + r() * 160}" cy="${100 + r() * 100}" r="${70 + r() * 30}" fill="${v(c2)}"/>`);
+    } else if (style === 1) {
+      // stacked arches
+      for (let i = 0; i < 4; i++) shapes.push(`<path d="M${60 + i * 20} 300 V200 A${140 - i * 20} ${140 - i * 20} 0 0 1 ${340 - i * 20} 200 V300 Z" fill="${v([c1, c2, c3, bg][i])}"/>`);
+      shapes.push(`<circle cx="${80 + r() * 240}" cy="60" r="26" fill="${v(c3)}"/>`);
+    } else if (style === 2) {
+      // puzzle pieces tumbling
+      for (let i = 0; i < 3; i++) {
+        const x = 30 + i * 120 + r() * 20, y = 60 + r() * 80, rot = -25 + r() * 50;
+        shapes.push(`<g transform="translate(${x} ${y}) rotate(${rot} 50 50) scale(1.05)"><path d="${PIECE_PATH}" fill="${v([c1, c2, c3][i])}"/></g>`);
+      }
+    } else {
+      // squiggle + dots
+      let d = "M-10 150";
+      for (let x = 0; x <= 420; x += 50) d += ` Q${x + 25} ${r() > 0.5 ? 60 : 240} ${x + 50} 150`;
+      shapes.push(`<path d="${d}" fill="none" stroke="${v(c1)}" stroke-width="28" stroke-linecap="round"/>`);
+      for (let i = 0; i < 14; i++) shapes.push(`<circle cx="${r() * 400}" cy="${r() * 300}" r="${4 + r() * 10}" fill="${v(i % 2 ? c2 : c3)}"/>`);
+    }
+    return `<svg class="cover" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="400" height="300" fill="${v(bg)}"/>${shapes.join("")}</svg>`;
+  }
+
+  /* ================= HOME ================= */
+  if (page === "home") {
+    // hero badge
+    $("#hero-badge").innerHTML = badge("hero-seal", "hi there ✦ welcome in ✦ ", "tomato");
+
+    // puzzle-piece navigation
+    $("#pieces").innerHTML = S.sections
+      .map(
+        (s, i) => `
+        <a class="piece" href="${s.href}" style="--c:${v(s.color)};--i:${v(s.ink)};--r:${[-5, 4, -3][i % 3]}deg">
+          ${piece(v(s.color))}
+          <span class="piece-num">0${i + 1}</span>
+          <span class="piece-title">${esc(s.title)}</span>
+          <span class="piece-blurb">${esc(s.blurb)}</span>
+          <span class="piece-go" aria-hidden="true">→</span>
+        </a>`
+      )
+      .join("");
+
+    // folder tabs
+    const folders = $("#folders");
+    folders.innerHTML = `
+      <div class="folder-tabs" role="tablist">
+        ${S.offerings
+          .map(
+            (o, i) =>
+              `<button role="tab" id="tab-${i}" aria-controls="folder-panel" aria-selected="${i === 0}" style="--c:${v(o.color)};--i:${v(o.ink)}">${esc(o.tab)}</button>`
+          )
+          .join("")}
+      </div>
+      <div id="folder-panel" class="folder-panel" role="tabpanel"></div>`;
+    const panel = $("#folder-panel");
+    const tabs = folders.querySelectorAll("[role=tab]");
+    const show = (i) => {
+      const o = S.offerings[i];
+      tabs.forEach((t, j) => t.setAttribute("aria-selected", i === j));
+      panel.style.setProperty("--c", v(o.color));
+      panel.style.setProperty("--i", v(o.ink));
+      panel.setAttribute("aria-labelledby", `tab-${i}`);
+      panel.innerHTML = `<p class="folder-num">(0${i + 1}/0${S.offerings.length})</p><h3>${esc(o.tab)}</h3><p>${esc(o.body)}</p><a class="btn" href="#contact">let's make something →</a>`;
+    };
+    tabs.forEach((t, i) => t.addEventListener("click", () => show(i)));
+    show(0);
+  }
+
+  /* ================= COLLECTION PAGES ================= */
+  const P = S.pages[page];
+  if (P) {
+    document.title = `${P.title} — molly rudisill`;
+    document.body.style.setProperty("--theme", v(P.color));
+    document.body.style.setProperty("--theme-ink", v(P.ink));
+    const tags = ["all", ...new Set(P.items.map((it) => it.tag))];
+
+    $("#page").innerHTML = `
+      <section class="page-hero">
+        <div class="page-hero-text">
+          <p class="kicker">${esc(P.kicker)}</p>
+          <h1>${esc(P.title)}</h1>
+          <p class="lede">${esc(P.intro)}</p>
+          ${P.cta ? `<a class="btn btn-ink" href="${P.cta.href}">${esc(P.cta.label)} →</a>` : ""}
+        </div>
+        <div class="page-hero-pieces" aria-hidden="true">
+          ${piece(v("cream"), 'style="--r:-12deg"')}${piece(v(P.ink), 'style="--r:9deg"')}
+        </div>
+      </section>
+      <div data-marquee class="marquee marquee-ink"></div>
+      <section class="collection wrap">
+        <div class="chips" role="group" aria-label="filter">
+          ${tags.map((t, i) => `<button class="chip" aria-pressed="${i === 0}" data-tag="${esc(t)}">${esc(t)}</button>`).join("")}
+        </div>
+        <div class="grid">
+          ${P.items
+            .map(
+              (it, i) => `
+              <article class="card" data-tag="${esc(it.tag)}" style="--r:${[-1.5, 1, -0.5, 1.5][i % 4]}deg" tabindex="0" data-i="${i}">
+                <div class="card-art">${it.image ? `<img src="${esc(it.image)}" alt="${esc(it.title)}" loading="lazy"/>` : cover(it.title)}</div>
+                <p class="card-tag">${esc(it.tag)} · ${esc(it.year)}</p>
+                <h3>${esc(it.title)}</h3>
+              </article>`
+            )
+            .join("")}
+        </div>
+      </section>
+      <dialog class="lightbox"><div class="lightbox-inner"></div></dialog>`;
+
+    // re-run marquee for the injected one
+    document.querySelectorAll("#page [data-marquee]").forEach((el) => {
+      const run = S.marquee.map((w) => `<span>${esc(w)}</span><i>✦</i>`).join("");
+      el.innerHTML = `<div class="marquee-track">${run}${run}</div>`;
+    });
+
+    // filters
+    const chips = document.querySelectorAll(".chip");
+    chips.forEach((c) =>
+      c.addEventListener("click", () => {
+        chips.forEach((x) => x.setAttribute("aria-pressed", x === c));
+        document.querySelectorAll(".card").forEach((card) => {
+          card.hidden = c.dataset.tag !== "all" && card.dataset.tag !== c.dataset.tag;
+        });
+      })
+    );
+
+    // lightbox
+    const dlg = $(".lightbox");
+    const open = (i) => {
+      const it = P.items[i];
+      $(".lightbox-inner").innerHTML = `
+        <button class="lightbox-close" aria-label="close">×</button>
+        <div class="lightbox-art">${it.image ? `<img src="${esc(it.image)}" alt="${esc(it.title)}"/>` : cover(it.title)}</div>
+        <div class="lightbox-text">
+          <p class="card-tag">${esc(it.tag)} · ${esc(it.year)}</p>
+          <h2>${esc(it.title)}</h2>
+          <p>${esc(it.desc || "")}</p>
+          ${it.link ? `<a class="btn btn-ink" href="${esc(it.link)}">take a look →</a>` : ""}
+        </div>`;
+      $(".lightbox-close").addEventListener("click", () => dlg.close());
+      dlg.showModal();
+    };
+    dlg.addEventListener("click", (e) => e.target === dlg && dlg.close());
+    document.querySelectorAll(".card").forEach((card) => {
+      card.addEventListener("click", () => open(+card.dataset.i));
+      card.addEventListener("keydown", (e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), open(+card.dataset.i)));
+    });
+  }
+
+  /* ---------- reveal on scroll ---------- */
+  const io = "IntersectionObserver" in window
+    ? new IntersectionObserver((entries) => entries.forEach((e) => e.isIntersecting && (e.target.classList.add("in"), io.unobserve(e.target))), { threshold: 0.12 })
+    : null;
+  document.querySelectorAll(".reveal, .card, .piece").forEach((el) => (io ? io.observe(el) : el.classList.add("in")));
+})();

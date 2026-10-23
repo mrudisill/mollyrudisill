@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>hi, i'm molly — molly rudisill</title>
+  <meta name="description" content="molly rudisill: where tech meets creative. art, code & what not." />
+  <link rel="icon" href="assets/mark-mr.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,800;1,9..144,400;1,9..144,600&family=Lexend:wght@300;400;500;600;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-page="home">
+  <header id="site-header"></header>
+
+  <main>
+    <!-- ============ HERO ============ -->
+    <section class="hero">
+      <div>
+        <p class="hello">hi, i'm</p>
+        <h1 class="molly" aria-label="molly">
+          <span style="--c:var(--blush);--i:var(--cherry);--r:-6deg;--n:0">M</span>
+          <span class="serif" style="--c:var(--tomato);--i:var(--cream);--r:4deg;--n:1">o</span>
+          <span class="ital" style="--c:var(--chartreuse);--i:var(--olive);--r:-3deg;--n:2">l</span>
+          <span style="--c:var(--olive);--i:var(--chartreuse);--r:5deg;--n:3">l</span>
+          <span class="serif" style="--c:var(--bubblegum);--i:var(--cherry);--r:-4deg;--n:4">y</span>
+        </h1>
+        <p class="rudisill">rudisill</p>
+        <p class="lede">i live where <strong>tech meets creative.</strong> art, code and everything in between. poke around!</p>
+        <div class="hero-ctas">
+          <a class="btn" href="#pieces-section">pick a piece ↓</a>
+          <a class="btn btn-ghost" href="#contact">say hi</a>
+        </div>
+      </div>
+
+      <div class="portrait">
+        <svg class="squiggle" viewBox="0 0 120 60" aria-hidden="true"><path d="M5 40 Q20 5 35 30 T65 30 T95 30 T120 20" fill="none" stroke="var(--cherry)" stroke-width="7" stroke-linecap="round"/></svg>
+        <div class="portrait-frame">
+          <div class="portrait-placeholder">
+            <p>(your photo goes here!)</p>
+          </div>
+          <!-- drop a photo at site/assets/molly.jpg and it shows up automatically -->
+          <img src="assets/molly.jpg" alt="molly rudisill" onerror="this.remove()" />
+        </div>
+        <div id="hero-badge"></div>
+        <span class="tag-note">that's me!</span>
+      </div>
+    </section>
+
+    <div data-marquee class="marquee"></div>
+
+    <!-- ============ PUZZLE PIECE NAV ============ -->
+    <section id="pieces-section" class="section">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <h2>pick a <em>piece</em></h2>
+          <p>i'm a little bit of everything. choose where you'd like to start.</p>
+        </div>
+        <div id="pieces" class="pieces"></div>
+      </div>
+    </section>
+
+    <div class="stripes"></div>
+
+    <!-- ============ ABOUT ============ -->
+    <section class="section">
+      <div class="wrap about reveal">
+        <div class="equation" aria-hidden="true">
+          <div class="eq-piece" style="--c:var(--sky);--i:var(--ink);--r:-8deg">
+            <svg viewBox="-2 -4 106 106"><path d="M0 22 H31 Q34 22 33 18 A11 11 0 1 1 47 18 Q46 22 49 22 H78 V51 Q78 54 82 53 A11 11 0 1 1 82 67 Q78 66 78 69 V100 H0 Z" fill="var(--c)"/></svg><span>tech</span>
+          </div>
+          <span class="eq-op">+</span>
+          <div class="eq-piece" style="--c:var(--tomato);--i:var(--cream);--r:7deg">
+            <svg viewBox="-2 -4 106 106"><path d="M0 22 H31 Q34 22 33 18 A11 11 0 1 1 47 18 Q46 22 49 22 H78 V51 Q78 54 82 53 A11 11 0 1 1 82 67 Q78 66 78 69 V100 H0 Z" fill="var(--c)"/></svg><span>creative</span>
+          </div>
+        </div>
+        <div>
+          <p class="kicker">my whole thing</p>
+          <h2>tech <em>+</em> creative</h2>
+          <p>most people pick a side: the art or the code. i never could, so i do both. i paint and draw by hand, i build things with code, and the best stuff happens where the two meet. think art made with code, websites that feel handmade, and tools that make making easier.</p>
+          <p class="hand">every piece matters ✿</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ THE FULL OFFERING ============ -->
+    <section class="section offering">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <h2>what i <em>make</em></h2>
+          <p>the stuff that happens when tech and creative team up. click a tab to open the folder.</p>
+        </div>
+        <div id="folders" class="folders reveal"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="js/content.js"></script>
+  <script src="js/site.js"></script>
+</body>
+</html>
