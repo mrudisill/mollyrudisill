@@ -67,6 +67,18 @@
           <a class="btn btn-cream" href="mailto:${esc(S.email)}">${esc(S.email)}</a>
         </div>
         ${badge("seal", "tech + creative ✦ art + code ✦ ", "sky")}
+        <button class="smiski" aria-label="psst… a tiny glowing friend">
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <ellipse cx="32" cy="60" rx="17" ry="14" fill="#e4f1cc"/>
+            <ellipse cx="32" cy="30" rx="21" ry="19" fill="#e4f1cc"/>
+            <ellipse cx="25" cy="19" rx="6" ry="3.5" fill="#fff" opacity=".55"/>
+            <ellipse cx="24.5" cy="31" rx="2.3" ry="2.8" fill="#2b2822"/>
+            <ellipse cx="39.5" cy="31" rx="2.3" ry="2.8" fill="#2b2822"/>
+            <ellipse cx="13" cy="46" rx="5" ry="4" fill="#d6e8bb"/>
+            <ellipse cx="51" cy="46" rx="5" ry="4" fill="#d6e8bb"/>
+          </svg>
+          <span class="smiski-bubble">you found me! ✿</span>
+        </button>
       </section>
       <div class="stripes stripes-tomato"></div>
       <div class="footer-inner">
@@ -80,6 +92,19 @@
         </div>
         <p class="footer-copy">© ${new Date().getFullYear()} molly rudisill · made with love & a lot of color</p>
       </div>`;
+  }
+
+  /* ---------- the hidden smiski: click it and the lights go out ---------- */
+  const smiski = $(".smiski");
+  if (smiski) {
+    const dark = document.createElement("div");
+    dark.className = "lights-out-overlay";
+    document.body.appendChild(dark);
+    smiski.addEventListener("click", () => {
+      if (document.body.classList.contains("lights-out")) return;
+      document.body.classList.add("lights-out");
+      setTimeout(() => document.body.classList.remove("lights-out"), 3400);
+    });
   }
 
   /* ---------- record player (spotify) ---------- */

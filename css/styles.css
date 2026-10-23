@@ -387,6 +387,39 @@ em { font-family: var(--font-serif); font-style: italic; font-weight: 500; lette
   background: var(--chartreuse); border: 2px solid var(--ink); font-size: 24px; line-height: 1; cursor: pointer;
 }
 
+/* ============================================================ hidden smiski */
+.stripes, .footer-inner { position: relative; z-index: 2; } /* the smiski hides behind these */
+.stripes { pointer-events: none; }
+.contact .smiski {
+  position: absolute; z-index: 1;
+  left: max(7vw, calc(50% - 430px)); bottom: -26px;
+  width: 64px; height: 64px; padding: 0;
+  background: none; border: 0; cursor: pointer;
+  transform: translateY(6px);
+  transition: transform 0.5s cubic-bezier(.34, 1.56, .64, 1), filter 0.6s;
+}
+.contact .smiski svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.contact .smiski:hover, .contact .smiski:focus-visible { transform: translateY(-12px) rotate(-6deg); }
+.smiski-bubble {
+  position: absolute; bottom: 100%; left: 50%;
+  translate: -50% -6px; white-space: nowrap;
+  font: 600 17px var(--font-hand); color: var(--ink);
+  background: var(--cream); border-radius: 10px; padding: 1px 10px;
+  opacity: 0; transition: opacity 0.3s;
+}
+.lights-out-overlay {
+  position: fixed; inset: 0; z-index: 90;
+  background: rgba(12, 14, 10, 0.9);
+  opacity: 0; pointer-events: none; transition: opacity 0.6s;
+}
+body.lights-out .lights-out-overlay { opacity: 1; }
+body.lights-out .contact .smiski {
+  z-index: 95;
+  transform: translateY(-44px) scale(1.5);
+  filter: drop-shadow(0 0 8px #d8ffb4) drop-shadow(0 0 22px #a8f07a);
+}
+body.lights-out .smiski-bubble { opacity: 1; transition-delay: 0.4s; }
+
 /* ============================================================ record player */
 .turntable { position: fixed; right: 20px; bottom: 20px; z-index: 60; display: flex; flex-direction: column; align-items: flex-end; gap: 14px; }
 .tt-deck {
