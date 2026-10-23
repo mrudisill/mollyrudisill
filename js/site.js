@@ -20,7 +20,7 @@
   if (header) {
     header.innerHTML = `
       <a class="brand" href="index.html" aria-label="molly rudisill — home">
-        <img src="assets/mark-mr.png" alt="MR" />
+        <span class="logo" data-logo></span>
       </a>
       <button class="nav-toggle" aria-expanded="false" aria-controls="nav">menu</button>
       <nav id="nav" class="nav">
@@ -37,6 +37,21 @@
       const open = header.classList.toggle("open");
       btn.setAttribute("aria-expanded", open);
     });
+  }
+
+  /* ---------- puzzle logo (inlined so each piece can move) ---------- */
+  const logos = document.querySelectorAll("[data-logo]");
+  fetch("assets/logo-puzzle.svg")
+    .then((r) => (r.ok ? r.text() : Promise.reject()))
+    .then((svg) => logos.forEach((el) => (el.innerHTML = svg)))
+    .catch(() => logos.forEach((el) => (el.innerHTML = '<img src="assets/logo-puzzle.svg" alt="molly rudisill" />')));
+
+  // on the home page the header logo waits until the big hero logo scrolls away
+  const heroLogo = $(".hero-logo");
+  if (heroLogo && "IntersectionObserver" in window) {
+    new IntersectionObserver(([e]) => document.body.classList.toggle("past-hero", !e.isIntersecting)).observe(heroLogo);
+  } else {
+    document.body.classList.add("past-hero");
   }
 
   /* ---------- marquee ---------- */

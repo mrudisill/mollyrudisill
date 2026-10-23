@@ -104,8 +104,14 @@ em { font-family: var(--font-serif); font-style: italic; font-weight: 500; lette
   backdrop-filter: blur(10px);
   border-bottom: 2px solid var(--ink);
 }
-.brand img { height: 48px; width: auto; transition: transform 0.3s; }
-.brand:hover img { transform: rotate(-3deg) scale(1.04); }
+.brand { display: block; transition: opacity 0.3s, transform 0.3s; }
+.brand .logo { display: block; height: 50px; }
+.brand svg, .brand img { display: block; height: 100%; width: auto; overflow: visible; }
+.brand:hover .pz { animation: pz-jiggle 0.5s ease; animation-delay: calc(var(--n) * 60ms); }
+body[data-page="home"]:not(.past-hero) .brand { opacity: 0; transform: translateY(-8px); pointer-events: none; }
+@keyframes pz-jiggle { 35% { transform: translateY(-10%) rotate(-7deg); } 70% { transform: translateY(3%) rotate(4deg); } }
+/* each puzzle piece turns around its own center */
+.pz { transform-box: fill-box; transform-origin: center; transition: transform 0.35s cubic-bezier(.34, 1.56, .64, 1); }
 .nav { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .nav a {
   font-family: var(--font-accent); font-weight: 500;
@@ -137,31 +143,13 @@ em { font-family: var(--font-serif); font-style: italic; font-weight: 500; lette
   color: var(--tomato); margin: 0 0 4px; transform: rotate(-4deg); transform-origin: left;
   display: inline-block;
 }
-.molly {
-  display: flex; flex-wrap: nowrap; gap: clamp(4px, 0.8vw, 10px);
-  font-size: clamp(56px, 11vw, 150px);
-  margin: 0;
-}
-.molly span {
-  display: grid; place-items: center;
-  width: 1em; height: 1.05em;
-  background: var(--c); color: var(--i);
-  border-radius: 0.1em;
-  transform: rotate(var(--r));
-  box-shadow: 0 6px 0 rgba(43, 40, 34, 0.12);
-  transition: transform 0.35s cubic-bezier(.34, 1.56, .64, 1);
-  animation: drop 0.7s cubic-bezier(.34, 1.56, .64, 1) both;
-  animation-delay: calc(var(--n) * 90ms);
-}
-.molly span:hover { transform: rotate(calc(var(--r) * -1.6)) translateY(-8px); }
-.molly .serif { font-family: var(--font-serif); font-weight: 800; font-style: normal; }
-.molly .ital { font-family: var(--font-serif); font-style: italic; font-weight: 600; }
-@keyframes drop { from { opacity: 0; transform: translateY(-60px) rotate(20deg); } }
-.rudisill {
-  font-family: var(--font-accent); font-weight: 400;
-  letter-spacing: 0.7em; font-size: clamp(16px, 2.2vw, 26px);
-  color: var(--cocoa); margin: 18px 0 26px 0.2em;
-}
+.hero-logo { margin: 0 0 30px; width: min(100%, 620px); }
+.hero-logo svg, .hero-logo img { display: block; width: 100%; height: auto; overflow: visible; }
+.hero-logo .pz { animation: pz-drop 0.8s cubic-bezier(.34, 1.56, .64, 1) backwards; animation-delay: calc(150ms + var(--n) * 110ms); }
+.hero-logo .rud { animation: pz-fade 0.6s ease backwards; animation-delay: 0.85s; }
+.hero-logo .pz:hover { transform: translateY(-6%) rotate(-6deg); }
+@keyframes pz-drop { from { opacity: 0; transform: translateY(-140%) rotate(calc(-30deg + var(--n) * 15deg)); } }
+@keyframes pz-fade { from { opacity: 0; transform: translateY(12px); } }
 .hero .lede { font-size: clamp(18px, 1.8vw, 22px); max-width: 30ch; margin: 0 0 30px; }
 .hero .lede strong { font-weight: 600; background: linear-gradient(transparent 60%, var(--chartreuse) 60%); }
 .hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; }
@@ -429,7 +417,7 @@ em { font-family: var(--font-serif); font-style: italic; font-weight: 500; lette
   .footer-mark { width: 84px; }
 }
 @media (max-width: 520px) {
-  .brand img { height: 40px; }
+  .brand .logo { height: 40px; }
   .pieces { gap: 14px; }
   .piece-blurb { display: none; }
   .piece-title { bottom: 14%; }
