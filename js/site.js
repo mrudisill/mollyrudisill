@@ -321,7 +321,15 @@
       panel.style.setProperty("--c", v(o.color));
       panel.style.setProperty("--i", v(o.ink));
       panel.setAttribute("aria-labelledby", `tab-${i}`);
-      panel.innerHTML = `<p class="folder-num">(0${i + 1}/0${S.offerings.length})</p><h3>${esc(o.tab)}</h3><p>${esc(o.body)}</p><a class="btn" href="#contact">let's make something →</a>`;
+      panel.innerHTML = `
+        <div class="folder-text">
+          <p class="folder-num">(0${i + 1}/0${S.offerings.length})</p><h3>${esc(o.tab)}</h3><p>${esc(o.body)}</p><a class="btn" href="#contact">let's make something →</a>
+        </div>
+        <figure class="folder-photo">
+          ${o.image
+            ? `<img src="${esc(o.image)}" alt="${esc(o.tab)}" />`
+            : `<div class="folder-photo-empty"><span>(${esc(o.tab)} photo<br/>goes here!)</span></div>`}
+        </figure>`;
     };
     tabs.forEach((t, i) => t.addEventListener("click", () => show(i)));
     show(0);

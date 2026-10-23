@@ -35,7 +35,8 @@ window.SITE = {
     { id: "life", title: "& what not", href: "life.html", color: "bubblegum", ink: "cherry", blurb: "notes, favorite things & the in-between" },
   ],
 
-  // the folder tabs ("what i make") on the home page
+  // the folder tabs ("what i make") on the home page.
+  // add a photo to any tab with  image: "assets/needlepoint.jpg"  (otherwise it shows a placeholder)
   offerings: [
     { tab: "needlepoint", color: "chartreuse", ink: "olive", body: "hand-stitched canvases, one tiny stitch at a time. colorful, a little cheeky and made to last." },
     { tab: "websites", color: "blush", ink: "cherry", body: "websites that are fun to click and easy to update. like this one!" },
