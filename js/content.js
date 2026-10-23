@@ -21,7 +21,7 @@ window.SITE = {
   // in spotify: playlist → ••• → share → copy link to playlist, then paste it here
   music: {
     title: "songs for making things",
-    playlist: "https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M", // ← placeholder, swap for your playlist
+    playlist: "https://open.spotify.com/playlist/1EiwPq5GrqSMdlGjnOcil7",
   },
 
   // scrolling ticker text
