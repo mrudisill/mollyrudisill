@@ -82,6 +82,64 @@
       </div>`;
   }
 
+  /* ---------- record player (spotify) ---------- */
+  const playlistId = ((S.music && S.music.playlist) || "").match(/playlist\/([A-Za-z0-9]+)/);
+  if (playlistId) {
+    const tt = document.createElement("aside");
+    tt.className = "turntable";
+    tt.setAttribute("aria-label", "molly's playlist");
+    tt.innerHTML = `
+      <div class="tt-panel" id="tt-panel" hidden>
+        <div class="tt-head">
+          <div>
+            <p class="tt-kicker">now spinning</p>
+            <h3>${esc(S.music.title)}</h3>
+          </div>
+          <button class="tt-close" aria-label="close player">×</button>
+        </div>
+        <div class="tt-embed"><div id="tt-embed"></div></div>
+      </div>
+      <button class="tt-deck" aria-expanded="false" aria-controls="tt-panel" aria-label="open molly's playlist">
+        <span class="tt-record"><span class="tt-label"><img src="assets/mark-mr.png" alt="" /></span></span>
+        <span class="tt-arm" aria-hidden="true"></span>
+        <span class="tt-note" aria-hidden="true">♫ my playlist</span>
+      </button>`;
+    document.body.appendChild(tt);
+
+    const panel = $(".tt-panel", tt), deck = $(".tt-deck", tt);
+    let loaded = false;
+    const plainEmbed = () => {
+      $("#tt-embed", tt).outerHTML = `<iframe src="https://open.spotify.com/embed/playlist/${playlistId[1]}?theme=0" width="100%" height="352" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" title="spotify playlist"></iframe>`;
+    };
+    const load = () => {
+      if (loaded) return;
+      loaded = true;
+      // spotify's embed api tells us when music is playing, so the record can spin
+      const fallback = setTimeout(plainEmbed, 6000);
+      window.onSpotifyIframeApiReady = (api) => {
+        clearTimeout(fallback);
+        api.createController($("#tt-embed", tt), { uri: `spotify:playlist:${playlistId[1]}`, width: "100%", height: 352 }, (ctrl) => {
+          ctrl.addListener("playback_update", (e) => tt.classList.toggle("playing", !e.data.isPaused));
+        });
+      };
+      const script = document.createElement("script");
+      script.src = "https://open.spotify.com/embed/iframe-api/v1";
+      script.async = true;
+      script.onerror = () => (clearTimeout(fallback), plainEmbed());
+      document.body.appendChild(script);
+    };
+    const setOpen = (open) => {
+      load();
+      panel.hidden = !open;
+      tt.classList.toggle("open", open);
+      deck.setAttribute("aria-expanded", open);
+      deck.setAttribute("aria-label", open ? "close molly's playlist" : "open molly's playlist");
+    };
+    deck.addEventListener("click", () => setOpen(panel.hidden));
+    $(".tt-close", tt).addEventListener("click", () => setOpen(false));
+    document.addEventListener("keydown", (e) => e.key === "Escape" && !panel.hidden && setOpen(false));
+  }
+
   /* ---------- helpers that draw brand shapes ---------- */
   function wavyRect(w, h, a) {
     // a rectangle with a scalloped / wavy edge, like a stamp

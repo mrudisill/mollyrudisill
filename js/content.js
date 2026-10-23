@@ -17,6 +17,13 @@ window.SITE = {
     { label: "linkedin", url: "https://linkedin.com/" },
   ],
 
+  // the record player in the bottom-right corner.
+  // in spotify: playlist → ••• → share → copy link to playlist, then paste it here
+  music: {
+    title: "songs for making things",
+    playlist: "https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M", // ← placeholder, swap for your playlist
+  },
+
   // scrolling ticker text
   marquee: ["tech + creative", "art", "code", "design", "color", "creative coding", "web", "good weirdness"],
 
