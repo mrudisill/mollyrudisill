@@ -21,6 +21,7 @@ window.SITE = {
   // in spotify: playlist → ••• → share → copy link to playlist, then paste it here
   music: {
     title: "songs for making things",
+    autoplay: true, // starts on the visitor's first click or tap (browsers don't allow sooner)
     playlist: "https://open.spotify.com/playlist/1EiwPq5GrqSMdlGjnOcil7",
   },
 

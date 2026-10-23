@@ -114,7 +114,7 @@
     tt.className = "turntable";
     tt.setAttribute("aria-label", "molly's playlist");
     tt.innerHTML = `
-      <div class="tt-panel" id="tt-panel" hidden>
+      <div class="tt-panel is-closed" id="tt-panel" aria-hidden="true">
         <div class="tt-head">
           <div>
             <p class="tt-kicker">now spinning</p>
@@ -127,12 +127,11 @@
       <button class="tt-deck" aria-expanded="false" aria-controls="tt-panel" aria-label="open molly's playlist">
         <span class="tt-record"><span class="tt-label"><img src="assets/mark-mr.png" alt="" /></span></span>
         <span class="tt-arm" aria-hidden="true"></span>
-        <span class="tt-note" aria-hidden="true">♫ my playlist</span>
       </button>`;
     document.body.appendChild(tt);
 
     const panel = $(".tt-panel", tt), deck = $(".tt-deck", tt);
-    let loaded = false;
+    let loaded = false, controller = null, wantPlay = false;
     const plainEmbed = () => {
       $("#tt-embed", tt).outerHTML = `<iframe src="https://open.spotify.com/embed/playlist/${playlistId[1]}?theme=0" width="100%" height="352" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" title="spotify playlist"></iframe>`;
     };
@@ -144,7 +143,13 @@
       window.onSpotifyIframeApiReady = (api) => {
         clearTimeout(fallback);
         api.createController($("#tt-embed", tt), { uri: `spotify:playlist:${playlistId[1]}`, width: "100%", height: 352 }, (ctrl) => {
-          ctrl.addListener("playback_update", (e) => tt.classList.toggle("playing", !e.data.isPaused));
+          controller = ctrl;
+          ctrl.addListener("ready", () => wantPlay && ctrl.play());
+          ctrl.addListener("playback_update", (e) => {
+            const playing = !e.data.isPaused;
+            tt.classList.toggle("playing", playing);
+            if (playing) try { sessionStorage.setItem("music-started", "1"); } catch (_) {}
+          });
         });
       };
       const script = document.createElement("script");
@@ -155,14 +160,32 @@
     };
     const setOpen = (open) => {
       load();
-      panel.hidden = !open;
+      // the panel stays loaded while closed, so spotify can get ready in the background
+      panel.classList.toggle("is-closed", !open);
+      panel.setAttribute("aria-hidden", !open);
       tt.classList.toggle("open", open);
       deck.setAttribute("aria-expanded", open);
       deck.setAttribute("aria-label", open ? "close molly's playlist" : "open molly's playlist");
     };
-    deck.addEventListener("click", () => setOpen(panel.hidden));
+    const isOpen = () => !panel.classList.contains("is-closed");
+    deck.addEventListener("click", () => setOpen(!isOpen()));
     $(".tt-close", tt).addEventListener("click", () => setOpen(false));
-    document.addEventListener("keydown", (e) => e.key === "Escape" && !panel.hidden && setOpen(false));
+    document.addEventListener("keydown", (e) => e.key === "Escape" && isOpen() && setOpen(false));
+
+    // browsers block sound until someone interacts with the page, so the music
+    // starts on the visitor's first click, tap or key press (once per visit)
+    let started = null;
+    try { started = sessionStorage.getItem("music-started"); } catch (_) {}
+    if (S.music.autoplay && !started) {
+      load();
+      const events = ["pointerdown", "keydown", "touchstart"];
+      const start = () => {
+        events.forEach((t) => document.removeEventListener(t, start, true));
+        wantPlay = true;
+        if (controller) controller.play();
+      };
+      events.forEach((t) => document.addEventListener(t, start, true));
+    }
   }
 
   /* ---------- helpers that draw brand shapes ---------- */
