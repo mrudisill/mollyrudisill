@@ -42,7 +42,7 @@ window.SITE = {
     { tab: "websites", color: "blush", ink: "cherry", body: "websites that are fun to click and easy to update. like this one!" },
     { tab: "jewelry", color: "bubblegum", ink: "ink", body: "one-of-a-kind pieces made by hand: bright, playful and meant to be worn every day." },
     { tab: "technical + ai solutions", color: "cherry", ink: "cream", body: "smart tools, automations and ai-powered helpers that take the boring stuff off your plate." },
-    { tab: "art", color: "olive", ink: "chartreuse", body: "paintings, prints and drawings that start in my sketchbook and end up on your wall." },
+    { tab: "art", color: "sky", ink: "ink", body: "paintings, prints and drawings that start in my sketchbook and end up on your wall." },
   ],
 
   // one entry per inner page

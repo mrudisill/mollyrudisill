@@ -274,9 +274,14 @@
     ? new IntersectionObserver((entries) => entries.forEach((e) => e.isIntersecting && (e.target.classList.add("in"), io.unobserve(e.target))), { threshold: 0.12 })
     : null;
 
+  /* the home page's folder stack re-measures itself when the window resizes */
+  let layStack = null;
+  addEventListener("resize", () => layStack && layStack());
+
   /* ================= PAGE CONTENT (re-runs on every page change) ================= */
   function renderPage() {
   const page = document.body.dataset.page;
+  layStack = null;
   document.querySelectorAll("#nav [data-section]").forEach((a) =>
     a.dataset.section === page ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current")
   );
@@ -301,38 +306,86 @@
       )
       .join("");
 
-    // folder tabs
-    const folders = $("#folders");
-    folders.innerHTML = `
-      <div class="folder-tabs" role="tablist">
-        ${S.offerings
-          .map(
-            (o, i) =>
-              `<button role="tab" id="tab-${i}" aria-controls="folder-panel" aria-selected="${i === 0}" style="--c:${v(o.color)};--i:${v(o.ink)}">${esc(o.tab)}</button>`
-          )
-          .join("")}
+    // a messy stack of folders: click one to pull it to the top, drag them around
+    const stack = $("#folders");
+    const MESS = [[-3, "-2%"], [2.5, "4%"], [-1.5, "-3%"], [3, "3%"], [-2, "0%"]];
+    stack.innerHTML = `
+      <div class="stack-note" aria-hidden="true">
+        <svg class="clip" viewBox="0 0 26 64"><path d="M8 20 V50 a6 6 0 0 0 12 0 V10 a8 8 0 0 0 -16 0 V46" fill="none" stroke="#7d8c7a" stroke-width="2.6" stroke-linecap="round"/></svg>
+        <small>all my thoughts:</small>
+        <p>pick a folder, drag it around!</p>
       </div>
-      <div id="folder-panel" class="folder-panel" role="tabpanel"></div>`;
-    const panel = $("#folder-panel");
-    const tabs = folders.querySelectorAll("[role=tab]");
-    const show = (i) => {
-      const o = S.offerings[i];
-      tabs.forEach((t, j) => t.setAttribute("aria-selected", i === j));
-      panel.style.setProperty("--c", v(o.color));
-      panel.style.setProperty("--i", v(o.ink));
-      panel.setAttribute("aria-labelledby", `tab-${i}`);
-      panel.innerHTML = `
-        <div class="folder-text">
-          <p class="folder-num">(0${i + 1}/0${S.offerings.length})</p><h3>${esc(o.tab)}</h3><p>${esc(o.body)}</p><a class="btn" href="#contact">let's make something →</a>
-        </div>
-        <figure class="folder-photo">
-          ${o.image
-            ? `<img src="${esc(o.image)}" alt="${esc(o.tab)}" />`
-            : `<div class="folder-photo-empty"><span>(${esc(o.tab)} photo<br/>goes here!)</span></div>`}
-        </figure>`;
+      ${S.offerings
+        .map((o, i) => {
+          const [r, jx] = MESS[i % MESS.length];
+          return `
+          <article class="folder" tabindex="0" aria-label="${esc(o.tab)}" style="--c:${v(o.color)};--i:${v(o.ink)};--r:${r}deg;--jx:${jx};z-index:${i + 1}">
+            <div class="folder-tab" aria-hidden="true"><span>0${i + 1}</span><span>${esc(o.tab)}</span></div>
+            <div class="folder-text">
+              <h3>${esc(o.tab)}</h3>
+              <p>${esc(o.body)}</p>
+              <a class="btn" href="#contact">let's make something →</a>
+            </div>
+            <figure class="folder-photo">
+              ${o.image
+                ? `<img src="${esc(o.image)}" alt="${esc(o.tab)}" />`
+                : `<div class="folder-photo-empty"><span>(${esc(o.tab)} photo<br/>goes here!)</span></div>`}
+            </figure>
+          </article>`;
+        })
+        .join("")}`;
+    stack.insertAdjacentHTML("afterend", `<button class="stack-tidy">tidy up the stack ↺</button>`);
+
+    const items = [...stack.querySelectorAll(".folder")];
+    let topZ = items.length;
+    const toFront = (f) => f.style.zIndex !== String(topZ) && (f.style.zIndex = ++topZ);
+
+    // fan the folders out so every tab peeks out, then size the stack to fit
+    layStack = () => {
+      const step = innerWidth < 640 ? 92 : 172;
+      items.forEach((f, i) => (f.style.top = `${56 + i * step}px`));
+      stack.style.height = `${Math.max(...items.map((f) => f.offsetTop + f.offsetHeight)) + 24}px`;
     };
-    tabs.forEach((t, i) => t.addEventListener("click", () => show(i)));
-    show(0);
+    layStack();
+    stack.querySelectorAll("img").forEach((img) => img.addEventListener("load", () => layStack && layStack()));
+
+    items.forEach((f) => {
+      f.addEventListener("focusin", () => toFront(f));
+      f.addEventListener("pointerdown", (e) => {
+        toFront(f);
+        if (e.button !== 0 || e.target.closest("a, button")) return;
+        if (e.pointerType !== "mouse" && !e.target.closest(".folder-tab")) return; // touch: drag by the tab
+        e.preventDefault();
+        const x0 = e.clientX - (+f.dataset.dx || 0), y0 = e.clientY - (+f.dataset.dy || 0);
+        f.setPointerCapture(e.pointerId);
+        f.classList.add("dragging");
+        const move = (ev) => {
+          f.dataset.dx = ev.clientX - x0;
+          f.dataset.dy = ev.clientY - y0;
+          f.style.setProperty("--dx", `${f.dataset.dx}px`);
+          f.style.setProperty("--dy", `${f.dataset.dy}px`);
+        };
+        const up = () => {
+          f.classList.remove("dragging");
+          f.removeEventListener("pointermove", move);
+          f.removeEventListener("pointerup", up);
+          f.removeEventListener("pointercancel", up);
+        };
+        f.addEventListener("pointermove", move);
+        f.addEventListener("pointerup", up);
+        f.addEventListener("pointercancel", up);
+      });
+    });
+
+    $(".stack-tidy").addEventListener("click", () =>
+      items.forEach((f, i) => {
+        f.dataset.dx = f.dataset.dy = 0;
+        f.style.removeProperty("--dx");
+        f.style.removeProperty("--dy");
+        f.style.zIndex = i + 1;
+        topZ = items.length;
+      })
+    );
   }
 
   /* ================= COLLECTION PAGES ================= */
