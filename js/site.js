@@ -4,7 +4,6 @@
    ============================================================ */
 (function () {
   const S = window.SITE;
-  const page = document.body.dataset.page;
   const $ = (sel, root = document) => root.querySelector(sel);
   const v = (name) => `var(--${name})`;
   const esc = (s = "") => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -27,7 +26,7 @@
         ${S.sections
           .map(
             (s) =>
-              `<a href="${s.href}" style="--c:${v(s.color)};--i:${v(s.ink)}" ${s.id === page ? 'aria-current="page"' : ""}>${esc(s.title)}</a>`
+              `<a href="${s.href}" data-section="${s.id}" style="--c:${v(s.color)};--i:${v(s.ink)}">${esc(s.title)}</a>`
           )
           .join("")}
         <a class="nav-say-hi" href="#contact">say hi</a>
@@ -40,17 +39,20 @@
   }
 
   /* ---------- puzzle logo (inlined so each piece can move) ---------- */
-  const logos = document.querySelectorAll("[data-logo]");
-  fetch("assets/logo-puzzle.svg")
-    .then((r) => (r.ok ? r.text() : Promise.reject()))
-    .then((svg) => logos.forEach((el) => (el.innerHTML = svg)))
-    .catch(() => logos.forEach((el) => (el.innerHTML = '<img src="assets/logo-puzzle.svg" alt="molly rudisill" />')));
+  const logoSvg = fetch("assets/logo-puzzle.svg").then((r) => (r.ok ? r.text() : Promise.reject()));
+  const fillLogos = () => {
+    const logos = document.querySelectorAll("[data-logo]");
+    logoSvg
+      .then((svg) => logos.forEach((el) => (el.innerHTML = svg)))
+      .catch(() => logos.forEach((el) => (el.innerHTML = '<img src="assets/logo-puzzle.svg" alt="molly rudisill" />')));
+  };
 
   /* ---------- marquee ---------- */
-  document.querySelectorAll("[data-marquee]").forEach((el) => {
-    const run = S.marquee.map((w) => `<span>${esc(w)}</span><i>✦</i>`).join("");
-    el.innerHTML = `<div class="marquee-track">${run}${run}</div>`;
-  });
+  const fillMarquees = () =>
+    document.querySelectorAll("main [data-marquee]").forEach((el) => {
+      const run = S.marquee.map((w) => `<span>${esc(w)}</span><i>✦</i>`).join("");
+      el.innerHTML = `<div class="marquee-track">${run}${run}</div>`;
+    });
 
   /* ---------- footer + contact ticket ---------- */
   const footer = $("#site-footer");
@@ -267,6 +269,19 @@
     return `<svg class="cover" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="400" height="300" fill="${v(bg)}"/>${shapes.join("")}</svg>`;
   }
 
+  /* ---------- reveal on scroll ---------- */
+  const io = "IntersectionObserver" in window
+    ? new IntersectionObserver((entries) => entries.forEach((e) => e.isIntersecting && (e.target.classList.add("in"), io.unobserve(e.target))), { threshold: 0.12 })
+    : null;
+
+  /* ================= PAGE CONTENT (re-runs on every page change) ================= */
+  function renderPage() {
+  const page = document.body.dataset.page;
+  document.querySelectorAll("#nav [data-section]").forEach((a) =>
+    a.dataset.section === page ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current")
+  );
+  fillLogos();
+
   /* ================= HOME ================= */
   if (page === "home") {
     // hero badge
@@ -352,12 +367,6 @@
       </section>
       <dialog class="lightbox"><div class="lightbox-inner"></div></dialog>`;
 
-    // re-run marquee for the injected one
-    document.querySelectorAll("#page [data-marquee]").forEach((el) => {
-      const run = S.marquee.map((w) => `<span>${esc(w)}</span><i>✦</i>`).join("");
-      el.innerHTML = `<div class="marquee-track">${run}${run}</div>`;
-    });
-
     // filters
     const chips = document.querySelectorAll(".chip");
     chips.forEach((c) =>
@@ -390,11 +399,49 @@
       card.addEventListener("click", () => open(+card.dataset.i));
       card.addEventListener("keydown", (e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), open(+card.dataset.i)));
     });
+  } else {
+    document.body.style.removeProperty("--theme");
+    document.body.style.removeProperty("--theme-ink");
   }
 
-  /* ---------- reveal on scroll ---------- */
-  const io = "IntersectionObserver" in window
-    ? new IntersectionObserver((entries) => entries.forEach((e) => e.isIntersecting && (e.target.classList.add("in"), io.unobserve(e.target))), { threshold: 0.12 })
-    : null;
+  fillMarquees();
   document.querySelectorAll(".reveal, .card, .piece").forEach((el) => (io ? io.observe(el) : el.classList.add("in")));
+  }
+
+  /* ================= MOVING BETWEEN PAGES =================
+     links swap in the new page's <main> instead of reloading,
+     so the header, footer and record player (and the music!) stay put */
+  async function go(url, push) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(res.status);
+      const doc = new DOMParser().parseFromString(await res.text(), "text/html");
+      const next = doc.querySelector("main");
+      if (!next) throw new Error("no main");
+      document.querySelector("main").replaceWith(document.importNode(next, true));
+      document.body.dataset.page = doc.body.dataset.page;
+      document.title = doc.title;
+      if (push) history.pushState({}, "", url);
+      header && header.classList.remove("open");
+      renderPage();
+      const target = url.hash && document.querySelector(url.hash);
+      target ? target.scrollIntoView() : window.scrollTo({ top: 0, behavior: "instant" });
+    } catch (err) {
+      console.warn("page swap failed, loading normally", err);
+      location.href = url.href; // if anything goes wrong, just load the page normally
+    }
+  }
+
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest("a[href]");
+    if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || a.target) return;
+    const url = new URL(a.href, location.href);
+    if (url.origin !== location.origin || !/(\.html|\/)$/.test(url.pathname)) return;
+    if (url.pathname === location.pathname) return; // same page (e.g. #contact): let the browser scroll
+    e.preventDefault();
+    go(url, true);
+  });
+  window.addEventListener("popstate", () => go(new URL(location.href), false));
+
+  renderPage();
 })();
