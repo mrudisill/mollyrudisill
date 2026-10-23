@@ -104,12 +104,9 @@ em { font-family: var(--font-serif); font-style: italic; font-weight: 500; lette
   backdrop-filter: blur(10px);
   border-bottom: 2px solid var(--ink);
 }
-.brand { display: block; transition: opacity 0.3s, transform 0.3s; }
-.brand .logo { display: block; height: 50px; }
-.brand svg, .brand img { display: block; height: 100%; width: auto; overflow: visible; }
-.brand:hover .pz { animation: pz-jiggle 0.5s ease; animation-delay: calc(var(--n) * 60ms); }
-body[data-page="home"]:not(.past-hero) .brand { opacity: 0; transform: translateY(-8px); pointer-events: none; }
-@keyframes pz-jiggle { 35% { transform: translateY(-10%) rotate(-7deg); } 70% { transform: translateY(3%) rotate(4deg); } }
+.brand { display: block; }
+.brand img { display: block; height: 52px; width: auto; transition: transform 0.35s cubic-bezier(.34, 1.56, .64, 1); }
+.brand:hover img { transform: rotate(-8deg) scale(1.08); }
 /* each puzzle piece turns around its own center */
 .pz { transform-box: fill-box; transform-origin: center; transition: transform 0.35s cubic-bezier(.34, 1.56, .64, 1); }
 .nav { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -417,7 +414,7 @@ body[data-page="home"]:not(.past-hero) .brand { opacity: 0; transform: translate
   .footer-mark { width: 84px; }
 }
 @media (max-width: 520px) {
-  .brand .logo { height: 40px; }
+  .brand img { height: 42px; }
   .pieces { gap: 14px; }
   .piece-blurb { display: none; }
   .piece-title { bottom: 14%; }
