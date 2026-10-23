@@ -37,11 +37,11 @@ window.SITE = {
 
   // the folder tabs ("what i make") on the home page
   offerings: [
-    { tab: "creative coding", color: "chartreuse", ink: "olive", body: "art made with code: generative patterns, interactive toys and things that move when you poke them." },
-    { tab: "web design", color: "blush", ink: "cherry", body: "websites that are fun to click and easy to update. like this one!" },
-    { tab: "brand identity", color: "bubblegum", ink: "ink", body: "logos, palettes and type systems, designed by hand and built to work on screens." },
-    { tab: "digital art", color: "cherry", ink: "cream", body: "illustrations, prints and paintings that start on paper and end up on pixels (or the other way around)." },
-    { tab: "apps & tools", color: "olive", ink: "chartreuse", body: "small, friendly software that makes creative work a little easier." },
+    { tab: "needlepoint", color: "chartreuse", ink: "olive", body: "hand-stitched canvases, one tiny stitch at a time. colorful, a little cheeky and made to last." },
+    { tab: "websites", color: "blush", ink: "cherry", body: "websites that are fun to click and easy to update. like this one!" },
+    { tab: "jewelry", color: "bubblegum", ink: "ink", body: "one-of-a-kind pieces made by hand: bright, playful and meant to be worn every day." },
+    { tab: "technical + ai solutions", color: "cherry", ink: "cream", body: "smart tools, automations and ai-powered helpers that take the boring stuff off your plate." },
+    { tab: "art", color: "olive", ink: "chartreuse", body: "paintings, prints and drawings that start in my sketchbook and end up on your wall." },
   ],
 
   // one entry per inner page
