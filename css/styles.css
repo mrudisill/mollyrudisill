@@ -361,7 +361,14 @@ em { font-family: var(--font-serif); font-style: italic; font-weight: 500; lette
 .snap-2 { --r: 6deg; right: 4%; top: 0; width: 38%; z-index: 1; --tape: var(--sky); --tape-r: 5deg; }
 .snap-3 { --r: -2deg; right: 10%; bottom: 0; width: 36%; z-index: 3; --tape: var(--chartreuse); }
 .tc-heading { position: relative; margin: 0; cursor: pointer; }
-.footer-tc { width: clamp(220px, 28vw, 380px); }
+/* tech + creative: what i believe */
+.tc-section { background: var(--sky); border-top: 2px solid var(--ink); }
+.tc-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 6vw, 80px); align-items: center; }
+.tc-section .tc-heading { width: 100%; max-width: 540px; justify-self: center; }
+.tc-text h2 { font-size: clamp(44px, 7vw, 92px); margin-bottom: 22px; }
+.tc-text h2 em { color: var(--tomato); font-weight: 400; }
+.tc-text p:not(.kicker):not(.hand) { font-size: clamp(17px, 1.7vw, 20px); max-width: 46ch; }
+.tc-text .hand { font-size: 30px; color: var(--cherry); margin: 12px 0 0; transform: rotate(-2deg); display: inline-block; }
 .tc-art { display: block; width: min(100%, 560px); height: auto; overflow: visible; }
 .tc-art .pz { transform-box: view-box; transform-origin: 0 0; transition: transform 1s cubic-bezier(.34, 1.45, .64, 1); }
 /* apart */
@@ -431,7 +438,7 @@ em { font-family: var(--font-serif); font-style: italic; font-weight: 500; lette
 .contact .seal { position: absolute; z-index: 3; right: max(2vw, calc(50% - 500px)); bottom: 30px; width: 150px; }
 .footer-inner {
   background: var(--ink); color: var(--cream);
-  display: grid; grid-template-columns: auto 1fr auto; gap: 24px 48px; align-items: center;
+  display: grid; grid-template-columns: auto 1fr; gap: 24px 48px; align-items: start;
   padding: clamp(40px, 6vw, 72px) var(--gutter) 28px;
 }
 .footer-mark { width: 120px; transform: rotate(-8deg); }
@@ -614,7 +621,8 @@ body.lights-out .smiski-bubble { opacity: 1; transition-delay: 0.4s; }
   .nav a { font-size: 20px; padding: 10px 18px; }
   .portrait { width: min(80%, 340px); }
   .about { grid-template-columns: 1fr; }
-  .footer-tc { width: min(90%, 320px); justify-self: center; }
+  .tc-wrap { grid-template-columns: 1fr; }
+  .tc-section .tc-heading { max-width: 380px; }
   .page-hero { grid-template-columns: 1fr; }
   .page-hero-pieces { display: none; }
   .lightbox-inner { grid-template-columns: 1fr; }
