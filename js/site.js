@@ -296,27 +296,29 @@
 
     // "i make ___": swap the word every couple of seconds
     const rot = $("#rotator");
-    const words = S.rotator.map((r) => r.word);
-    rot.setAttribute("aria-hidden", "true"); // screen readers hear the whole list once instead
-    rot.parentElement.setAttribute("aria-label", `i make ${words.slice(0, -1).join(", ")} and ${words.at(-1)}`);
-    let w = 0;
-    const showWord = (first) => {
-      const { word, hl } = S.rotator[w];
-      const old = rot.querySelector("span:not(.out)");
-      const next = document.createElement("span");
-      next.textContent = word;
-      next.style.setProperty("--hl", v(hl));
-      if (first) next.style.animation = "none";
-      rot.appendChild(next);
-      rot.style.width = `${next.offsetWidth}px`;
-      if (old) {
-        old.classList.add("out");
-        setTimeout(() => old.remove(), 400);
-      }
-      w = (w + 1) % S.rotator.length;
-    };
-    showWord(true);
-    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) rotateTimer = setInterval(showWord, 2200);
+    if (rot) {
+      const words = S.rotator.map((r) => r.word);
+      rot.setAttribute("aria-hidden", "true"); // screen readers hear the whole list once instead
+      rot.parentElement.setAttribute("aria-label", `i make ${words.slice(0, -1).join(", ")} and ${words.at(-1)}`);
+      let w = 0;
+      const showWord = (first) => {
+        const { word, hl } = S.rotator[w];
+        const old = rot.querySelector("span:not(.out)");
+        const next = document.createElement("span");
+        next.textContent = word;
+        next.style.setProperty("--hl", v(hl));
+        if (first) next.style.animation = "none";
+        rot.appendChild(next);
+        rot.style.width = `${next.offsetWidth}px`;
+        if (old) {
+          old.classList.add("out");
+          setTimeout(() => old.remove(), 400);
+        }
+        w = (w + 1) % S.rotator.length;
+      };
+      showWord(true);
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches) rotateTimer = setInterval(showWord, 2200);
+    }
 
     // puzzle-piece navigation
     $("#pieces").innerHTML = S.sections
@@ -351,80 +353,82 @@
 
     // a box of file dividers: click a tab and that folder slides to the front
     const box = $("#folders");
-    const n = S.offerings.length;
-    box.innerHTML = `
-      <div class="stack-note" aria-hidden="true">
-        <svg class="clip" viewBox="0 0 26 64"><path d="M8 20 V50 a6 6 0 0 0 12 0 V10 a8 8 0 0 0 -16 0 V46" fill="none" stroke="#7d8c7a" stroke-width="2.6" stroke-linecap="round"/></svg>
-        <small>all my thoughts:</small>
-        <p>flip through my files ✿</p>
-      </div>
-      <div role="tablist" aria-label="what i make">
-      ${S.offerings
-        .map(
-          (o, i) => `
-          <section class="folder felt" id="file-${i}" role="tabpanel" aria-labelledby="file-tab-${i}" style="--c:${v(o.color)};--i:${v(o.ink)}">
-            <button class="folder-tab felt" id="file-tab-${i}" role="tab" aria-controls="file-${i}"><span>0${i + 1}</span><span>${esc(o.tab)}</span></button>
-            <div class="folder-inner">
-              <div class="folder-text">
-                <h3>${esc(o.tab)}</h3>
-                <p>${esc(o.body)}</p>
-                <a class="btn" href="#contact">let's make something →</a>
+    if (box) {
+      const n = S.offerings.length;
+      box.innerHTML = `
+        <div class="stack-note" aria-hidden="true">
+          <svg class="clip" viewBox="0 0 26 64"><path d="M8 20 V50 a6 6 0 0 0 12 0 V10 a8 8 0 0 0 -16 0 V46" fill="none" stroke="#7d8c7a" stroke-width="2.6" stroke-linecap="round"/></svg>
+          <small>all my thoughts:</small>
+          <p>flip through my files ✿</p>
+        </div>
+        <div role="tablist" aria-label="what i make">
+        ${S.offerings
+          .map(
+            (o, i) => `
+            <section class="folder felt" id="file-${i}" role="tabpanel" aria-labelledby="file-tab-${i}" style="--c:${v(o.color)};--i:${v(o.ink)}">
+              <button class="folder-tab felt" id="file-tab-${i}" role="tab" aria-controls="file-${i}"><span>0${i + 1}</span><span>${esc(o.tab)}</span></button>
+              <div class="folder-inner">
+                <div class="folder-text">
+                  <h3>${esc(o.tab)}</h3>
+                  <p>${esc(o.body)}</p>
+                  <a class="btn" href="#contact">let's make something →</a>
+                </div>
+                <figure class="folder-photo">
+                  ${o.image
+                    ? `<img src="${esc(o.image)}" alt="${esc(o.tab)}" />`
+                    : `<div class="folder-photo-empty"><span>(${esc(o.tab)} photo<br/>goes here!)</span></div>`}
+                </figure>
               </div>
-              <figure class="folder-photo">
-                ${o.image
-                  ? `<img src="${esc(o.image)}" alt="${esc(o.tab)}" />`
-                  : `<div class="folder-photo-empty"><span>(${esc(o.tab)} photo<br/>goes here!)</span></div>`}
-              </figure>
-            </div>
-          </section>`
-        )
-        .join("")}
-      </div>`;
+            </section>`
+          )
+          .join("")}
+        </div>`;
 
-    const folders = [...box.querySelectorAll(".folder")];
-    let order = folders.map((_, i) => n - 1 - i); // back → front; the first folder starts in front
+      const folders = [...box.querySelectorAll(".folder")];
+      let order = folders.map((_, i) => n - 1 - i); // back → front; the first folder starts in front
 
-    layStack = () => {
-      const narrow = innerWidth < 640;
-      const step = narrow ? 44 : 50, tabH = narrow ? 40 : 46;
-      const tw = narrow ? 44 : 100 / n - 1.5; // tab width, in %
-      folders.forEach((f, i) => {
-        // tabs sit in a staircase across the top so every one stays visible
-        f.style.setProperty("--tw", `${tw}%`);
-        f.style.setProperty("--tx", `${narrow ? (i * (100 - tw)) / (n - 1) : i * (tw + 1.5) + 0.75}%`);
-      });
-      folders.forEach((f) => (f.style.height = "auto"));
-      const h = Math.max(...folders.map((f) => f.offsetHeight));
-      order.forEach((fi, slot) => {
-        const f = folders[fi];
-        f.style.height = `${h}px`;
-        f.style.top = `${tabH + slot * step}px`;
-        f.style.zIndex = slot + 1;
-        const front = slot === n - 1;
-        f.classList.toggle("is-front", front);
-        f.querySelector(".folder-tab").setAttribute("aria-selected", front);
-        f.querySelector(".folder-tab").tabIndex = front ? 0 : -1;
-      });
-      box.style.height = `${tabH + (n - 1) * step + h}px`;
-    };
-    layStack();
-    box.querySelectorAll("img").forEach((img) => img.addEventListener("load", () => layStack && layStack()));
-
-    const bringForward = (i) => {
-      order = [...order.filter((x) => x !== i), i];
+      layStack = () => {
+        const narrow = innerWidth < 640;
+        const step = narrow ? 44 : 50, tabH = narrow ? 40 : 46;
+        const tw = narrow ? 44 : 100 / n - 1.5; // tab width, in %
+        folders.forEach((f, i) => {
+          // tabs sit in a staircase across the top so every one stays visible
+          f.style.setProperty("--tw", `${tw}%`);
+          f.style.setProperty("--tx", `${narrow ? (i * (100 - tw)) / (n - 1) : i * (tw + 1.5) + 0.75}%`);
+        });
+        folders.forEach((f) => (f.style.height = "auto"));
+        const h = Math.max(...folders.map((f) => f.offsetHeight));
+        order.forEach((fi, slot) => {
+          const f = folders[fi];
+          f.style.height = `${h}px`;
+          f.style.top = `${tabH + slot * step}px`;
+          f.style.zIndex = slot + 1;
+          const front = slot === n - 1;
+          f.classList.toggle("is-front", front);
+          f.querySelector(".folder-tab").setAttribute("aria-selected", front);
+          f.querySelector(".folder-tab").tabIndex = front ? 0 : -1;
+        });
+        box.style.height = `${tabH + (n - 1) * step + h}px`;
+      };
       layStack();
-    };
-    folders.forEach((f, i) => {
-      const tab = f.querySelector(".folder-tab");
-      tab.addEventListener("click", () => bringForward(i));
-      tab.addEventListener("keydown", (e) => {
-        const d = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
-        if (!d) return;
-        const next = (i + d + n) % n;
-        bringForward(next);
-        folders[next].querySelector(".folder-tab").focus();
+      box.querySelectorAll("img").forEach((img) => img.addEventListener("load", () => layStack && layStack()));
+
+      const bringForward = (i) => {
+        order = [...order.filter((x) => x !== i), i];
+        layStack();
+      };
+      folders.forEach((f, i) => {
+        const tab = f.querySelector(".folder-tab");
+        tab.addEventListener("click", () => bringForward(i));
+        tab.addEventListener("keydown", (e) => {
+          const d = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+          if (!d) return;
+          const next = (i + d + n) % n;
+          bringForward(next);
+          folders[next].querySelector(".folder-tab").focus();
+        });
       });
-    });
+    }
   }
 
   /* ================= COLLECTION PAGES ================= */
