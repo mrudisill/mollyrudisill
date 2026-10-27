@@ -25,6 +25,15 @@ window.SITE = {
     playlist: "https://open.spotify.com/playlist/1EiwPq5GrqSMdlGjnOcil7",
   },
 
+  // the polaroids in "a little about me". add a photo with  image: "assets/your-photo.jpg"
+  about: {
+    photos: [
+      { image: "assets/molly.jpg", caption: "me + some new friends", alt: "molly smiling in a red striped sweater with three squirrel monkeys climbing on her" },
+      { caption: "my desk lately" },
+      { caption: "something i made" },
+    ],
+  },
+
   // the "i make ___" words under the logo (hl = highlighter color)
   rotator: [
     { word: "needlepoint", hl: "chartreuse" },

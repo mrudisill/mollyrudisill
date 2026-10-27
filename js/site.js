@@ -334,6 +334,22 @@
       )
       .join("");
 
+    // about me: a little collage of taped-down polaroids
+    const photos = $("#about-photos");
+    if (photos) {
+      photos.innerHTML = S.about.photos
+        .map(
+          (p, i) => `
+          <figure class="snap snap-${i + 1}">
+            ${p.image
+              ? `<img src="${esc(p.image)}" alt="${esc(p.alt || p.caption || "")}" />`
+              : `<div class="snap-empty">(photo goes here!)</div>`}
+            <figcaption>${esc(p.caption || "")}</figcaption>
+          </figure>`
+        )
+        .join("");
+    }
+
     // creative + tech: the pieces slide together when they scroll into view, then click
     const tc = $(".tc-heading");
     const snap = () => {
