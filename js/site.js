@@ -334,20 +334,50 @@
       )
       .join("");
 
-    // about me: a little collage of taped-down polaroids
-    const photos = $("#about-photos");
-    if (photos) {
-      photos.innerHTML = S.about.photos
-        .map(
-          (p, i) => `
-          <figure class="snap snap-${i + 1}">
-            ${p.image
-              ? `<img src="${esc(p.image)}" alt="${esc(p.alt || p.caption || "")}" />`
-              : `<div class="snap-empty">(photo goes here!)</div>`}
-            <figcaption>${esc(p.caption || "")}</figcaption>
-          </figure>`
-        )
-        .join("");
+    // about me: photos + graphics floating around "hi, i'm molly"
+    const float = $("#about-float");
+    if (float) {
+      const graphic = (f) => {
+        if (f.image) return `<div class="g"><img src="${esc(f.image)}" alt="${esc(f.alt || "")}" /></div>`;
+        if (f.shape === "check") return `<div class="g g-check" aria-hidden="true">${"<span></span>".repeat(4)}</div>`;
+        if (f.shape === "donut")
+          return `<div class="g g-donut" aria-hidden="true"><svg viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="32" fill="none" stroke="${v(f.ink)}" stroke-width="20" stroke-dasharray="120 201"/>
+            <circle cx="50" cy="50" r="32" fill="none" stroke="${v("cream")}" stroke-width="20" stroke-dasharray="50 201" stroke-dashoffset="-122"/>
+            <circle cx="50" cy="50" r="32" fill="none" stroke="${v("cocoa")}" stroke-width="20" stroke-dasharray="27 201" stroke-dashoffset="-174"/></svg></div>`;
+        if (f.shape === "bar") return `<div class="g g-bar" aria-hidden="true"><b>✦</b><span><i></i><i></i></span></div>`;
+        return `<div class="g g-lines" aria-hidden="true"><i></i><i></i><i></i></div>`;
+      };
+      float.insertAdjacentHTML(
+        "beforeend",
+        S.about.floaters
+          .slice(0, 8)
+          .map((f, i) => {
+            const inner =
+              f.kind === "cutout"
+                ? `<img src="${esc(f.image)}" alt="${esc(f.alt || "")}" />`
+                : f.kind === "photo"
+                ? f.image
+                  ? `<img class="card-img" src="${esc(f.image)}" alt="${esc(f.alt || "")}" />`
+                  : `<div class="card-img empty">(photo goes here!)</div>`
+                : graphic(f);
+            const colors = f.kind === "graphic" ? `;--c:${v(f.color || "cream")};--i:${v(f.ink || "ink")}` : "";
+            return `<div class="fl fl-${i + 1} fl-${f.kind}" style="--n:${i}${colors}"><div class="fl-in">${inner}</div></div>`;
+          })
+          .join("")
+      );
+      // everything drifts a little with the mouse
+      if (matchMedia("(pointer: fine)").matches && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        float.addEventListener("pointermove", (e) => {
+          const r = float.getBoundingClientRect();
+          float.style.setProperty("--px", (((e.clientX - r.left) / r.width) * 2 - 1).toFixed(3));
+          float.style.setProperty("--py", (((e.clientY - r.top) / r.height) * 2 - 1).toFixed(3));
+        });
+        float.addEventListener("pointerleave", () => {
+          float.style.setProperty("--px", 0);
+          float.style.setProperty("--py", 0);
+        });
+      }
     }
 
     // tech + creative: the pieces slide together when they scroll into view, then click

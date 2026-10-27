@@ -25,12 +25,21 @@ window.SITE = {
     playlist: "https://open.spotify.com/playlist/1EiwPq5GrqSMdlGjnOcil7",
   },
 
-  // the polaroids in "a little about me". add a photo with  image: "assets/your-photo.jpg"
+  // the floating things around "hi, i'm molly", in order (up to 8 spots).
+  //   cutout:  a photo of you with the background removed (png)
+  //   photo:   a rounded photo card. add  image: "assets/your-photo.jpg"
+  //   graphic: a colorful tile. shape: lines | check | donut | bar,
+  //            or add  image: "assets/your-graphic.png"  to use your own
   about: {
-    photos: [
-      { image: "assets/molly.jpg", caption: "me + some new friends", alt: "molly smiling in a red striped sweater with three squirrel monkeys climbing on her" },
-      { caption: "my desk lately" },
-      { caption: "something i made" },
+    floaters: [
+      { kind: "cutout", image: "assets/molly-cutout.png", alt: "molly in a red striped sweater with three squirrel monkeys" },
+      { kind: "photo" },
+      { kind: "graphic", shape: "lines", color: "bubblegum", ink: "cherry" },
+      { kind: "photo" },
+      { kind: "graphic", shape: "check", color: "sky", ink: "ink" },
+      { kind: "graphic", shape: "bar", color: "tomato", ink: "ink" },
+      { kind: "graphic", shape: "donut", color: "chartreuse", ink: "olive" },
+      { kind: "photo" },
     ],
   },
 
