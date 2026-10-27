@@ -150,10 +150,12 @@ em { font-family: var(--font-serif); font-style: italic; font-weight: 500; lette
 .hero .hero-seal { position: absolute; right: max(3%, calc(50% - 560px)); top: clamp(20px, 5vw, 60px); width: clamp(96px, 12vw, 150px); }
 
 /* "i make ___" with the word swapping every couple of seconds */
-.i-make { font-size: clamp(26px, 4vw, 44px); font-weight: 500; margin: 0 0 34px; letter-spacing: -0.01em; }
+.i-make { font-size: clamp(26px, 4vw, 44px); font-weight: 500; line-height: 1.3; margin: 0 0 34px; letter-spacing: -0.01em; }
+/* the rotator box is exactly one line tall and starts at the top of the line,
+   so the swapping word shares a baseline with "i make" */
 .rotator {
-  position: relative; display: inline-block; vertical-align: bottom;
-  height: 1.3em; overflow: hidden; text-align: left;
+  position: relative; display: inline-block; vertical-align: top;
+  height: 1.3em; line-height: 1.3em; overflow: hidden; text-align: left;
   transition: width 0.4s cubic-bezier(.34, 1.3, .64, 1);
 }
 .rotator span {
