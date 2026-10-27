@@ -277,11 +277,13 @@
   /* the home page's folder stack re-measures itself when the window resizes */
   let layStack = null;
   addEventListener("resize", () => layStack && layStack());
+  let rotateTimer = null;
 
   /* ================= PAGE CONTENT (re-runs on every page change) ================= */
   function renderPage() {
   const page = document.body.dataset.page;
   layStack = null;
+  clearInterval(rotateTimer);
   document.querySelectorAll("#nav [data-section]").forEach((a) =>
     a.dataset.section === page ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current")
   );
@@ -291,6 +293,30 @@
   if (page === "home") {
     // hero badge
     $("#hero-badge").innerHTML = badge("hero-seal", "hi there ✦ welcome in ✦ ", "tomato");
+
+    // "i make ___": swap the word every couple of seconds
+    const rot = $("#rotator");
+    const words = S.rotator.map((r) => r.word);
+    rot.setAttribute("aria-hidden", "true"); // screen readers hear the whole list once instead
+    rot.parentElement.setAttribute("aria-label", `i make ${words.slice(0, -1).join(", ")} and ${words.at(-1)}`);
+    let w = 0;
+    const showWord = (first) => {
+      const { word, hl } = S.rotator[w];
+      const old = rot.querySelector("span:not(.out)");
+      const next = document.createElement("span");
+      next.textContent = word;
+      next.style.setProperty("--hl", v(hl));
+      if (first) next.style.animation = "none";
+      rot.appendChild(next);
+      rot.style.width = `${next.offsetWidth}px`;
+      if (old) {
+        old.classList.add("out");
+        setTimeout(() => old.remove(), 400);
+      }
+      w = (w + 1) % S.rotator.length;
+    };
+    showWord(true);
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) rotateTimer = setInterval(showWord, 2200);
 
     // puzzle-piece navigation
     $("#pieces").innerHTML = S.sections

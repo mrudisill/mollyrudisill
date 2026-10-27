@@ -25,6 +25,15 @@ window.SITE = {
     playlist: "https://open.spotify.com/playlist/1EiwPq5GrqSMdlGjnOcil7",
   },
 
+  // the "i make ___" words under the logo (hl = highlighter color)
+  rotator: [
+    { word: "needlepoint", hl: "chartreuse" },
+    { word: "websites", hl: "sky" },
+    { word: "jewelry", hl: "bubblegum" },
+    { word: "ai tools", hl: "blush" },
+    { word: "art", hl: "chartreuse" },
+  ],
+
   // scrolling ticker text
   marquee: ["tech + creative", "art", "code", "design", "color", "creative coding", "web", "good weirdness"],
 

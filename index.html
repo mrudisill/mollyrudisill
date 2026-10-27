@@ -17,27 +17,14 @@
   <main>
     <!-- ============ HERO ============ -->
     <section class="hero">
-      <div>
-        <p class="hello">hi, i'm</p>
-        <h1 class="hero-logo" data-logo aria-label="molly rudisill"></h1>
-        <p class="lede">i live where <strong>tech meets creative.</strong> art, code and everything in between. poke around!</p>
-        <div class="hero-ctas">
-          <a class="btn" href="#pieces-section">pick a piece ↓</a>
-          <a class="btn btn-ghost" href="#contact">say hi</a>
-        </div>
-      </div>
-
-      <div class="portrait">
-        <svg class="squiggle" viewBox="0 0 120 60" aria-hidden="true"><path d="M5 40 Q20 5 35 30 T65 30 T95 30 T120 20" fill="none" stroke="var(--cherry)" stroke-width="7" stroke-linecap="round"/></svg>
-        <div class="portrait-frame">
-          <div class="portrait-placeholder">
-            <p>(your photo goes here!)</p>
-          </div>
-          <!-- drop a photo at site/assets/molly.jpg and it shows up automatically -->
-          <img src="assets/molly.jpg" alt="molly smiling in a red striped sweater with three squirrel monkeys climbing on her" onerror="this.remove()" />
-        </div>
-        <div id="hero-badge"></div>
-        <span class="tag-note">that's me!</span>
+      <svg class="squiggle" viewBox="0 0 120 60" aria-hidden="true"><path d="M5 40 Q20 5 35 30 T65 30 T95 30 T120 20" fill="none" stroke="var(--cherry)" stroke-width="7" stroke-linecap="round"/></svg>
+      <div id="hero-badge"></div>
+      <p class="hello">hi, i'm</p>
+      <h1 class="hero-logo" data-logo aria-label="molly rudisill"></h1>
+      <p class="i-make">i make <span class="rotator" id="rotator"></span></p>
+      <div class="hero-ctas">
+        <a class="btn" href="#pieces-section">pick a piece ↓</a>
+        <a class="btn btn-ghost" href="#contact">say hi</a>
       </div>
     </section>
 
@@ -59,14 +46,11 @@
     <!-- ============ ABOUT ============ -->
     <section class="section">
       <div class="wrap about reveal">
-        <div class="equation" aria-hidden="true">
-          <div class="eq-piece" style="--c:var(--sky);--i:var(--ink);--r:-8deg">
-            <svg viewBox="-2 -4 106 106"><path d="M0 22 H31 Q34 22 33 18 A11 11 0 1 1 47 18 Q46 22 49 22 H78 V51 Q78 54 82 53 A11 11 0 1 1 82 67 Q78 66 78 69 V100 H0 Z" fill="var(--c)"/></svg><span>tech</span>
+        <div class="portrait">
+          <div class="portrait-frame">
+            <img src="assets/molly.jpg" alt="molly smiling in a red striped sweater with three squirrel monkeys climbing on her" />
           </div>
-          <span class="eq-op">+</span>
-          <div class="eq-piece" style="--c:var(--tomato);--i:var(--cream);--r:7deg">
-            <svg viewBox="-2 -4 106 106"><path d="M0 22 H31 Q34 22 33 18 A11 11 0 1 1 47 18 Q46 22 49 22 H78 V51 Q78 54 82 53 A11 11 0 1 1 82 67 Q78 66 78 69 V100 H0 Z" fill="var(--c)"/></svg><span>creative</span>
-          </div>
+          <span class="tag-note">that's me!</span>
         </div>
         <div>
           <p class="kicker">my whole thing</p>
