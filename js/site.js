@@ -332,6 +332,23 @@
       )
       .join("");
 
+    // creative + tech: the pieces slide together when they scroll into view, then click
+    const tc = $(".tc-heading");
+    const snap = () => {
+      // jump apart instantly, then slide back together
+      tc.classList.add("resetting");
+      tc.classList.remove("joined", "snapped");
+      void tc.offsetWidth;
+      tc.classList.remove("resetting");
+      requestAnimationFrame(() => setTimeout(() => tc.classList.add("joined"), 120));
+      setTimeout(() => tc.classList.add("snapped"), 1050);
+    };
+    if ("IntersectionObserver" in window) {
+      const seen = new IntersectionObserver(([e]) => e.isIntersecting && (snap(), seen.disconnect()), { threshold: 0.5 });
+      seen.observe(tc);
+    } else snap();
+    tc.addEventListener("click", snap);
+
     // a box of file dividers: click a tab and that folder slides to the front
     const box = $("#folders");
     const n = S.offerings.length;

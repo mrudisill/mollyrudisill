@@ -327,14 +327,43 @@ em { font-family: var(--font-serif); font-style: italic; font-weight: 500; lette
 .about h2 { font-size: clamp(36px, 5.5vw, 68px); margin-bottom: 22px; }
 .about h2 { font-size: clamp(48px, 8vw, 104px); }
 .about h2 em { color: var(--tomato); font-weight: 400; }
-/* the creative + tech puzzle pieces: they slide together when the section scrolls in */
-.tc-heading { margin: 0 0 24px; }
-.tc-art { display: block; width: min(100%, 520px); height: auto; overflow: visible; }
-.tc-creative { --from: -70px; --spin: -12deg; }
-.tc-tech { --from: 70px; --spin: 12deg; }
-.about .tc-art .pz { transform: translateX(var(--from)) rotate(var(--spin)); }
-.about.in .tc-art .pz { transform: none; transition: transform 0.9s cubic-bezier(.34, 1.56, .64, 1) 0.25s; }
-.about.in .tc-art .pz:hover { transform: translateY(-5%) rotate(-4deg); transition-delay: 0s; transition-duration: 0.35s; }
+/* the creative + tech puzzle pieces: they start apart, slide together and click into place */
+.about { grid-template-columns: 1.1fr 0.9fr; }
+.tc-heading { position: relative; margin: 0; cursor: pointer; }
+.tc-art { display: block; width: min(100%, 560px); height: auto; overflow: visible; }
+.tc-art .pz { transform-box: view-box; transform-origin: 0 0; transition: transform 1s cubic-bezier(.34, 1.45, .64, 1); }
+/* apart */
+.tc-creative { transform: translate(-70px, 24px) translate(110px, 135px) rotate(-14deg) translate(-110px, -135px); }
+.tc-tech     { transform: translate(40px, -26px) translate(270px, 112px) rotate(20deg) translate(-270px, -112px); }
+/* locked together: creative's knob sits in tech's notch */
+.tc-heading.joined .tc-creative { transform: translate(0px, 0px) translate(110px, 135px) rotate(0deg) translate(-110px, -135px); }
+.tc-heading.joined .tc-tech     { transform: translate(-81px, 9px) translate(270px, 112px) rotate(4.75deg) translate(-270px, -112px); }
+/* hover: they wiggle apart a little, then snap back */
+.tc-heading.resetting .tc-art .pz { transition: none; }
+.tc-heading.snapped:hover .tc-art .pz { transition-duration: 0.45s; }
+.tc-heading.snapped:hover .tc-creative { transform: translate(-10px, 3px) translate(110px, 135px) rotate(-4deg) translate(-110px, -135px); }
+.tc-heading.snapped:hover .tc-tech     { transform: translate(-71px, 5px) translate(270px, 112px) rotate(9deg) translate(-270px, -112px); }
+/* the click: a little bump, then a slow float */
+.tc-heading.snapped .tc-art { animation: tc-bump 0.45s ease-out, tc-float 5s ease-in-out 0.45s infinite; }
+@keyframes tc-bump { 40% { transform: scale(1.05) rotate(-1deg); } }
+@keyframes tc-float { 50% { transform: translateY(-8px) rotate(0.6deg); } }
+/* sparkles burst out of the joint */
+.tc-spark { position: absolute; left: 30%; top: 40%; pointer-events: none; }
+.tc-spark i {
+  position: absolute; font-style: normal; font-size: 26px; line-height: 1; opacity: 0;
+  color: var(--c, var(--tomato));
+}
+.tc-spark i:nth-child(1) { --c: var(--tomato);     --to: translate(-40px, -70px) rotate(-30deg); }
+.tc-spark i:nth-child(2) { --c: var(--chartreuse); --to: translate(20px, -84px) rotate(40deg); font-size: 20px; }
+.tc-spark i:nth-child(3) { --c: var(--bubblegum);  --to: translate(56px, -36px) rotate(70deg); }
+.tc-spark i:nth-child(4) { --c: var(--sky);        --to: translate(-60px, 20px) rotate(-60deg); font-size: 18px; }
+.tc-spark i:nth-child(5) { --c: var(--cherry);     --to: translate(44px, 46px) rotate(20deg); font-size: 22px; }
+.tc-heading.snapped .tc-spark i { animation: tc-burst 0.9s cubic-bezier(.2, .8, .3, 1) both; }
+@keyframes tc-burst {
+  0% { opacity: 0; transform: scale(0.3); }
+  25% { opacity: 1; }
+  100% { opacity: 0; transform: var(--to) scale(1.1); }
+}
 .about p { font-size: clamp(17px, 1.7vw, 20px); max-width: 52ch; }
 .about .hand { font-size: 30px; color: var(--cocoa); margin: 10px 0 0; transform: rotate(-2deg); display: inline-block; }
 
@@ -553,6 +582,7 @@ body.lights-out .smiski-bubble { opacity: 1; transition-delay: 0.4s; }
   .nav a { font-size: 20px; padding: 10px 18px; }
   .portrait { width: min(80%, 340px); }
   .about { grid-template-columns: 1fr; }
+  .tc-heading { justify-self: center; width: 100%; max-width: 460px; }
   .page-hero { grid-template-columns: 1fr; }
   .page-hero-pieces { display: none; }
   .lightbox-inner { grid-template-columns: 1fr; }
