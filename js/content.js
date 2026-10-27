@@ -32,14 +32,14 @@ window.SITE = {
   //            or add  image: "assets/your-graphic.png"  to use your own
   about: {
     floaters: [
-      { kind: "cutout", image: "assets/molly-cutout.png", alt: "molly in a red striped sweater with three squirrel monkeys" },
-      { kind: "photo" },
+      { kind: "cutout", image: "assets/cutouts/safari.png", alt: "molly laughing on safari, holding binoculars" },
+      { kind: "photo", image: "assets/photos/camino-finish.jpg", alt: "molly holding her stamped camino credential in front of the santiago cathedral" },
       { kind: "graphic", shape: "lines", color: "bubblegum", ink: "cherry" },
-      { kind: "photo" },
+      { kind: "photo", image: "assets/photos/cape-town-rainbow.jpg", alt: "molly smiling on a balcony with a rainbow over table mountain" },
       { kind: "graphic", shape: "check", color: "sky", ink: "ink" },
       { kind: "graphic", shape: "bar", color: "tomato", ink: "ink" },
       { kind: "graphic", shape: "donut", color: "chartreuse", ink: "olive" },
-      { kind: "photo" },
+      { kind: "photo", image: "assets/photos/needlepoint-pup.jpg", alt: "molly stitching needlepoint on the porch with her dog" },
     ],
   },
 
