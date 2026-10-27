@@ -335,20 +335,20 @@ em { font-family: var(--font-serif); font-style: italic; font-weight: 500; lette
 /* apart */
 .tc-creative { transform: translate(-70px, 24px) translate(110px, 135px) rotate(-14deg) translate(-110px, -135px); }
 .tc-tech     { transform: translate(40px, -26px) translate(270px, 112px) rotate(20deg) translate(-270px, -112px); }
-/* locked together: creative's knob sits in tech's notch */
+/* together: side by side, exactly as laid out in the artwork */
 .tc-heading.joined .tc-creative { transform: translate(0px, 0px) translate(110px, 135px) rotate(0deg) translate(-110px, -135px); }
-.tc-heading.joined .tc-tech     { transform: translate(-81px, 9px) translate(270px, 112px) rotate(4.75deg) translate(-270px, -112px); }
+.tc-heading.joined .tc-tech     { transform: translate(0px, 0px) translate(270px, 112px) rotate(0deg) translate(-270px, -112px); }
 /* hover: they wiggle apart a little, then snap back */
 .tc-heading.resetting .tc-art .pz { transition: none; }
 .tc-heading.snapped:hover .tc-art .pz { transition-duration: 0.45s; }
 .tc-heading.snapped:hover .tc-creative { transform: translate(-10px, 3px) translate(110px, 135px) rotate(-4deg) translate(-110px, -135px); }
-.tc-heading.snapped:hover .tc-tech     { transform: translate(-71px, 5px) translate(270px, 112px) rotate(9deg) translate(-270px, -112px); }
+.tc-heading.snapped:hover .tc-tech     { transform: translate(10px, -4px) translate(270px, 112px) rotate(5deg) translate(-270px, -112px); }
 /* the click: a little bump, then a slow float */
 .tc-heading.snapped .tc-art { animation: tc-bump 0.45s ease-out, tc-float 5s ease-in-out 0.45s infinite; }
 @keyframes tc-bump { 40% { transform: scale(1.05) rotate(-1deg); } }
 @keyframes tc-float { 50% { transform: translateY(-8px) rotate(0.6deg); } }
 /* sparkles burst out of the joint */
-.tc-spark { position: absolute; left: 30%; top: 40%; pointer-events: none; }
+.tc-spark { position: absolute; left: 44%; top: 42%; pointer-events: none; }
 .tc-spark i {
   position: absolute; font-style: normal; font-size: 26px; line-height: 1; opacity: 0;
   color: var(--c, var(--tomato));
