@@ -92,8 +92,37 @@
             ${S.socials.map((s) => `<li><a href="${s.url}" target="_blank" rel="noopener">${esc(s.label)} ↗</a></li>`).join("")}
           </ul>
         </div>
+        <div class="tc-heading footer-tc" title="click me!">
+          <span class="tc-spark" aria-hidden="true"><i>✦</i><i>✦</i><i>✦</i><i>✦</i><i>✦</i></span>
+        </div>
         <p class="footer-copy">© ${new Date().getFullYear()} molly rudisill · made with love & a lot of color</p>
       </div>`;
+  }
+
+  /* ---------- creative + tech: the brand sign-off in the footer ----------
+     the pieces slide together when they scroll into view, then click */
+  const tc = $(".footer-tc");
+  if (tc) {
+    const snap = () => {
+      // jump apart instantly, then slide back together
+      tc.classList.add("resetting");
+      tc.classList.remove("joined", "snapped");
+      void tc.offsetWidth;
+      tc.classList.remove("resetting");
+      requestAnimationFrame(() => setTimeout(() => tc.classList.add("joined"), 120));
+      setTimeout(() => tc.classList.add("snapped"), 1050);
+    };
+    fetch("assets/tech-creative.svg")
+      .then((r) => (r.ok ? r.text() : Promise.reject()))
+      .then((svg) => {
+        tc.insertAdjacentHTML("afterbegin", svg);
+        if ("IntersectionObserver" in window) {
+          const seen = new IntersectionObserver(([e]) => e.isIntersecting && (snap(), seen.disconnect()), { threshold: 0.5 });
+          seen.observe(tc);
+        } else snap();
+        tc.addEventListener("click", snap);
+      })
+      .catch(() => tc.remove());
   }
 
   /* ---------- the hidden smiski: click it and the lights go out ---------- */
@@ -349,23 +378,6 @@
         )
         .join("");
     }
-
-    // creative + tech: the pieces slide together when they scroll into view, then click
-    const tc = $(".tc-heading");
-    const snap = () => {
-      // jump apart instantly, then slide back together
-      tc.classList.add("resetting");
-      tc.classList.remove("joined", "snapped");
-      void tc.offsetWidth;
-      tc.classList.remove("resetting");
-      requestAnimationFrame(() => setTimeout(() => tc.classList.add("joined"), 120));
-      setTimeout(() => tc.classList.add("snapped"), 1050);
-    };
-    if ("IntersectionObserver" in window) {
-      const seen = new IntersectionObserver(([e]) => e.isIntersecting && (snap(), seen.disconnect()), { threshold: 0.5 });
-      seen.observe(tc);
-    } else snap();
-    tc.addEventListener("click", snap);
 
     // a box of file dividers: click a tab and that folder slides to the front
     const box = $("#folders");
