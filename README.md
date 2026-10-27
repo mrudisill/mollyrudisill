@@ -13,6 +13,6 @@ To use a real image, give the item `image: "assets/your-file.jpg"`.
 
 ## Preview locally
 ```bash
-python3 -m http.server 5173
+python3 serve.py
 ```
 Then open http://localhost:5173
